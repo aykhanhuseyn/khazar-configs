@@ -1,25 +1,39 @@
-import logo from './logo.svg';
+import React, { lazy } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { appRoutes } from './constants';
 import './App.css';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	return (
+		<Routes>
+			{appRoutes.map((route) => {
+				if (route.children)
+					return (
+						<Route
+							path={route.url}
+							element={lazy(() => import(`./pages/${route.component}`))}
+						>
+							{route.children.map((child) => (
+								<Route
+									key={child.url}
+									path={child.url}
+                  index={Boolean(child.isIndex)}
+									element={lazy(() => import(`./pages/${child.component}`))}
+								/>
+							))}
+						</Route>
+					);
+				return (
+					<Route
+						key={route.url}
+						path={route.url}
+            index={Boolean(route.isIndex)}
+						element={lazy(() => import(`./pages/${route.component}`))}
+					/>
+				);
+			})}
+		</Routes>
+	);
 }
 
 export default App;
